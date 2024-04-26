@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_IMAGE_NAME = 'mi_api_rust'
+        DB_CONTAINER_NAME = 'mi_contenedor_postgres'
+        DB_NAME = 'mi_base_de_datos'
+        DB_USER = 'usuario'
+        DB_PASSWORD = 'contraseña'
+    }
+
+    stages {
+        stage('Preparation') {
+            steps {
+                git 'https://github.com/Johan-Briones/Api-Rust.git'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh 'docker build -t $DOCKER_IMAGE_NAME .'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                // Agrega comandos para ejecutar tus pruebas
+                // Por ejemplo, puedes ejecutar pruebas unitarias si las tienes
+                // sh 'cargo test'
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                // Ejecutar contenedor de PostgreSQL
+                sh "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD postgres:alpine"
+
+                // Esperar unos segundos para asegurarse de que el contenedor de la base de datos esté en funcionamiento
+                sleep 10
+
+                // Ejecutar contenedor de la API Rust
+                sh "docker run -d --name $DOCKER_IMAGE_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $DOCKER_IMAGE_NAME"
+            }
+        }
+    }
+    
+    post {
+        always {
+            // Limpieza: detener y eliminar los contenedores después de que se completen las pruebas
+            sh "docker stop $DOCKER_IMAGE_NAME $DB_CONTAINER_NAME"
+            sh "docker rm $DOCKER_IMAGE_NAME $DB_CONTAINER_NAME"
+        }
+    }
+}
