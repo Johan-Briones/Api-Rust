@@ -2,11 +2,11 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE_NAME = 'mi_api_rust'
-        DB_CONTAINER_NAME = 'mi_contenedor_postgres'
-        DB_NAME = 'mi_base_de_datos'
-        DB_USER = 'usuario'
-        DB_PASSWORD = 'contraseña'
+        RUSTAPP_IMAGE_NAME = 'francescoxx/rustapp:1.0.0'
+        DB_IMAGE_NAME = 'postgres:12'
+        RUSTAPP_CONTAINER_NAME = 'rustapp'
+        DB_CONTAINER_NAME = 'db'
+        DATABASE_URL = sh(script: 'echo $DATABASE_URL', returnStdout: true).trim()
     }
 
     stages {
@@ -16,39 +16,45 @@ pipeline {
             }
         }
         
-        stage('Build') {
+        stage('Build Rust App') {
             steps {
-                sh 'docker build -t $DOCKER_IMAGE_NAME .'
+                sh 'docker build -t $RUSTAPP_IMAGE_NAME .'
             }
         }
         
-        stage('Test') {
+        stage('Test Rust App') {
             steps {
-                // Agrega comandos para ejecutar tus pruebas
-                // Por ejemplo, puedes ejecutar pruebas unitarias si las tienes
-                // sh 'cargo test'
+                // Agregar comandos para ejecutar las pruebas de tu aplicación Rust
+                // Por ejemplo, sh 'cargo test'
             }
         }
-        
+
+        stage('Build Database') {
+            steps {
+                sh 'docker pull $DB_IMAGE_NAME'
+            }
+        }
+
         stage('Deploy') {
             steps {
                 // Ejecutar contenedor de PostgreSQL
-                sh "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD postgres:alpine"
+                sh "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD $DB_IMAGE_NAME"
 
                 // Esperar unos segundos para asegurarse de que el contenedor de la base de datos esté en funcionamiento
                 sleep 10
 
                 // Ejecutar contenedor de la API Rust
-                sh "docker run -d --name $DOCKER_IMAGE_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $DOCKER_IMAGE_NAME"
+                sh "docker run -d --name $RUSTAPP_CONTAINER_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $RUSTAPP_IMAGE_NAME"
             }
         }
     }
     
     post {
         always {
-            // Limpieza: detener y eliminar los contenedores después de que se completen las pruebas
-            sh "docker stop $DOCKER_IMAGE_NAME $DB_CONTAINER_NAME"
-            sh "docker rm $DOCKER_IMAGE_NAME $DB_CONTAINER_NAME"
+            // Limpieza
+            sh "docker stop $RUSTAPP_CONTAINER_NAME $DB_CONTAINER_NAME"
+            sh "docker rm $RUSTAPP_CONTAINER_NAME $DB_CONTAINER_NAME"
         }
     }
 }
+
