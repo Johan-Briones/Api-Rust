@@ -7,6 +7,10 @@ pipeline {
         RUSTAPP_CONTAINER_NAME = 'rustapp'
         DB_CONTAINER_NAME = 'db'
         DATABASE_URL = sh(script: 'echo $DATABASE_URL', returnStdout: true).trim()
+        DB_NAME = 'postgres' // Define el nombre de tu base de datos
+        DB_USER = 'postgres' // Define el usuario de tu base de datos
+        DB_PASSWORD = 'postgres' // Define la contraseña de tu base de datos
+        
     }
 
     stages {
