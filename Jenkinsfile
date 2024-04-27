@@ -54,8 +54,8 @@ pipeline {
     post {
         always {
             // Limpieza
-            bat "docker stop ${ENV.RUSTAPP_CONTAINER_NAME} ${ENV.DB_CONTAINER_NAME}"
-            bat "docker rm ${ENV.RUSTAPP_CONTAINER_NAME} ${ENV.DB_CONTAINER_NAME}"
+            powershell "docker stop ${ENV.RUSTAPP_CONTAINER_NAME} ${ENV.DB_CONTAINER_NAME}"
+            powershell "docker rm ${ENV.RUSTAPP_CONTAINER_NAME} ${ENV.DB_CONTAINER_NAME}"
         }
     }
 }
