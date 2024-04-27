@@ -6,10 +6,10 @@ pipeline {
         DB_IMAGE_NAME = "postgres:12"
         RUSTAPP_CONTAINER_NAME = "rustapp"
         DB_CONTAINER_NAME = "db"
-        DATABASE_URL = env.DATABASE_URL
         DB_NAME = "postgres" // Define el nombre de tu base de datos
         DB_USER = "postgres" // Define el usuario de tu base de datos
         DB_PASSWORD = "postgres" // Define la contraseña de tu base de datos
+        DATABASE_URL = env.DATABASE_URL
     }
 
     stages {
@@ -59,6 +59,7 @@ pipeline {
         }
     }
 }
+
 
 
 
