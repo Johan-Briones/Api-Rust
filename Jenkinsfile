@@ -43,10 +43,10 @@ pipeline {
                 bat "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD $DB_IMAGE_NAME"
 
                 // Esperar unos segundos para asegurarse de que el contenedor de la base de datos esté en funcionamiento
-                sleep 10
+                bat "timeout /t 10 /nobreak"
 
                 // Ejecutar contenedor de la API Rust
-                bat "docker run -d --name $RUSTAPP_CONTAINER_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $RUSTAPP_IMAGE_NAME"
+                bat "start \"\" docker run -d --name $RUSTAPP_CONTAINER_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $RUSTAPP_IMAGE_NAME"
             }
         }
     }
