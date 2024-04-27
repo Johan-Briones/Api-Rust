@@ -50,14 +50,6 @@ pipeline {
             }
         }
     }
-    
-    post {
-        always {
-            // Limpieza
-            powershell "docker stop ${ENV.RUSTAPP_CONTAINER_NAME} ${ENV.DB_CONTAINER_NAME}"
-            powershell "docker rm ${ENV.RUSTAPP_CONTAINER_NAME} ${ENV.DB_CONTAINER_NAME}"
-        }
-    }
 }
 
 
