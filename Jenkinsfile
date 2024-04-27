@@ -21,32 +21,32 @@ pipeline {
         
         stage('Build Rust App') {
             steps {
-                sh 'docker build -t $RUSTAPP_IMAGE_NAME .'
+                bat 'docker build -t $RUSTAPP_IMAGE_NAME .'
             }
         }
         
         stage('Test Rust App') {
             steps {
-                sh 'cargo test'
+                bat 'cargo test'
             }
         }
 
         stage('Build Database') {
             steps {
-                sh 'docker pull $DB_IMAGE_NAME'
+                bat 'docker pull $DB_IMAGE_NAME'
             }
         }
 
         stage('Deploy') {
             steps {
                 // Ejecutar contenedor de PostgreSQL
-                sh "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD $DB_IMAGE_NAME"
+                bat "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD $DB_IMAGE_NAME"
 
                 // Esperar unos segundos para asegurarse de que el contenedor de la base de datos esté en funcionamiento
                 sleep 10
 
                 // Ejecutar contenedor de la API Rust
-                sh "docker run -d --name $RUSTAPP_CONTAINER_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $RUSTAPP_IMAGE_NAME"
+                bat "docker run -d --name $RUSTAPP_CONTAINER_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $RUSTAPP_IMAGE_NAME"
             }
         }
     }
@@ -54,8 +54,8 @@ pipeline {
     post {
         always {
             // Limpieza
-            sh "docker stop ${env.RUSTAPP_CONTAINER_NAME} ${env.DB_CONTAINER_NAME}"
-            sh "docker rm ${env.RUSTAPP_CONTAINER_NAME} ${env.DB_CONTAINER_NAME}"
+            bat "docker stop ${env.RUSTAPP_CONTAINER_NAME} ${env.DB_CONTAINER_NAME}"
+            bat "docker rm ${env.RUSTAPP_CONTAINER_NAME} ${env.DB_CONTAINER_NAME}"
         }
     }
 }
