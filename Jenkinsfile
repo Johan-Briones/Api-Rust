@@ -15,7 +15,12 @@ pipeline {
     stages {
         stage('Preparation') {
             steps {
-                git 'https://github.com/Johan-Briones/Api-Rust.git'
+                node {
+                    // Cambio a la ruta del directorio de trabajo para ejecutar git en el contexto correcto
+                    dir('C:/Users/ivan_/OneDrive/Documentos/Johan/10mo Semestre/DESP-APP/rust-api') {
+                        git 'https://github.com/Johan-Briones/Api-Rust.git'
+                    }
+                }
             }
         }
         
@@ -71,5 +76,6 @@ pipeline {
         }
     }
 }
+
 
 
