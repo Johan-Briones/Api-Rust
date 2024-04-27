@@ -28,8 +28,7 @@ pipeline {
         
         stage('Test Rust App') {
             steps {
-                // Agregar comandos para ejecutar las pruebas de tu aplicación Rust
-                // Por ejemplo, sh 'cargo test'
+                sh 'cargo test'
             }
         }
 
