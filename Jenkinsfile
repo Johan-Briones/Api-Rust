@@ -10,7 +10,6 @@ pipeline {
         DB_NAME = 'postgres' // Define el nombre de tu base de datos
         DB_USER = 'postgres' // Define el usuario de tu base de datos
         DB_PASSWORD = 'postgres' // Define la contraseña de tu base de datos
-        
     }
 
     stages {
@@ -55,8 +54,8 @@ pipeline {
     post {
         always {
             // Limpieza
-            sh "docker stop $RUSTAPP_CONTAINER_NAME $DB_CONTAINER_NAME"
-            sh "docker rm $RUSTAPP_CONTAINER_NAME $DB_CONTAINER_NAME"
+            sh "docker stop ${env.RUSTAPP_CONTAINER_NAME} ${env.DB_CONTAINER_NAME}"
+            sh "docker rm ${env.RUSTAPP_CONTAINER_NAME} ${env.DB_CONTAINER_NAME}"
         }
     }
 }
