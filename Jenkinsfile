@@ -22,7 +22,7 @@ pipeline {
         stage("Build Rust App") {
             steps {
                 script {
-                    bat "docker build -t $RUSTAPP_IMAGE_NAME ."
+                    sh "docker build -t $RUSTAPP_IMAGE_NAME ."
                 }
             }
         }
@@ -30,7 +30,7 @@ pipeline {
         stage("Test Rust App") {
             steps {
                 script {
-                    bat "cargo test"
+                    sh "cargo test"
                 }
             }
         }
@@ -38,7 +38,7 @@ pipeline {
         stage("Build Database") {
             steps {
                 script {
-                    bat "docker pull $DB_IMAGE_NAME"
+                    sh "docker pull $DB_IMAGE_NAME"
                 }
             }
         }
@@ -47,13 +47,13 @@ pipeline {
             steps {
                 script {
                     // Ejecutar contenedor de PostgreSQL
-                    bat "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD $DB_IMAGE_NAME"
+                    sh "docker run -d --name $DB_CONTAINER_NAME -e POSTGRES_DB=$DB_NAME -e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD $DB_IMAGE_NAME"
 
                     // Esperar unos segundos para asegurarse de que el contenedor de la base de datos esté en funcionamiento
                     sleep 10
 
                     // Ejecutar contenedor de la API Rust
-                    bat "docker run -d --name $RUSTAPP_CONTAINER_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $RUSTAPP_IMAGE_NAME"
+                    sh "docker run -d --name $RUSTAPP_CONTAINER_NAME -p 8080:8080 --link $DB_CONTAINER_NAME:postgres $RUSTAPP_IMAGE_NAME"
                 }
             }
         }
