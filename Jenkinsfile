@@ -9,7 +9,7 @@ pipeline {
         DB_NAME = "postgres" // Define el nombre de tu base de datos
         DB_USER = "postgres" // Define el usuario de tu base de datos
         DB_PASSWORD = "postgres" // Define la contraseña de tu base de datos
-        DATABASE_URL = "${env.DATABASE_URL}" // Asigna el valor de la variable de entorno DATABASE_URL
+        DATABASE_URL = "postgres://postgres:postgres@db:5432/postgres" // Asigna el valor de la variable de entorno DATABASE_URL
     }
 
     stages {
